@@ -81,13 +81,9 @@ const Login = () => {
                                     )}
                                 </div>
 
+
                                 <div>
-                                    <div className="flex items-center justify-between mb-1.5 ml-1">
-                                        <label className="block text-sm font-medium text-gray-700">Password</label>
-                                        <a href="#" className="text-sm font-medium text-orange-600 hover:text-orange-700">
-                                            Forgot password?
-                                        </a>
-                                    </div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5 ml-1">Password</label>
                                     <input
                                         type="password"
                                         placeholder="••••••••"
@@ -104,6 +100,11 @@ const Login = () => {
                                     {errors.password && (
                                         <p className="text-red-500 text-sm mt-1 ml-1">{errors.password.message}</p>
                                     )}
+                                    <div className="flex justify-end mt-1 mr-1">
+                                        <Link to="/forgot-password" className="text-sm font-medium text-orange-600 hover:text-orange-700">
+                                            Forgot password?
+                                        </Link>
+                                    </div>
                                 </div>
                             </div>
 

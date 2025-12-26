@@ -50,7 +50,7 @@ const Register = () => {
                 </div>
 
                 {/* Right Side - Form */}
-                <div className="w-full md:w-1/2 flex flex-col justify-center p-8 md:p-12 lg:p-16 bg-white">
+                <div className="w-full md:w-1/2 flex flex-col p-8 md:p-12 lg:p-16 bg-white overflow-y-auto">
                     <div className="max-w-md mx-auto w-full space-y-8">
                         <div className="text-center md:text-left space-y-2">
                             <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">

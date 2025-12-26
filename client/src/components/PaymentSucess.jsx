@@ -120,11 +120,6 @@ const PaymentSucess = () => {
                             <FaArrowLeft className="text-sm" />
                             Back to Home
                         </button>
-
-                        <button className="w-full bg-white hover:bg-green-50 text-green-700 font-semibold py-3.5 px-6 rounded-xl border border-green-200 shadow-sm transform active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer" onClick={() => { toast.success("Invoice sent to your email"); }}>
-                            <FaFileInvoice className="text-sm" />
-                            Get Invoice <span className="text-orange-500 font-bold ml-1">Gmail</span>
-                        </button>
                     </div>
                 </div>
             </div>

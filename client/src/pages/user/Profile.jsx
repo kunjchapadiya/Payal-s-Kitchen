@@ -50,17 +50,19 @@ const Profile = () => {
         return () => unsubscribe();
     }, [user, navigate, db]); // Added dependencies
 
+    const [isEditing, setIsEditing] = useState(false);
+
     // Forms
-    const { register: registerInfo, handleSubmit: handleSubmitInfo, formState: { errors: errorsInfo } } = useForm({
+    const { register: registerInfo, handleSubmit: handleSubmitInfo, reset: resetInfo, formState: { errors: errorsInfo } } = useForm({
         defaultValues: userdata // Use userdata instead of user which is auth object
     });
 
     // Update form default values when userdata changes
     useEffect(() => {
         if (userdata) {
-            // Logic to reset form values if needed, but react-hook-form handles this if defaultValues is static or reset is called
+            resetInfo(userdata);
         }
-    }, [userdata]);
+    }, [userdata, resetInfo]);
 
     const { register: registerPass, handleSubmit: handleSubmitPass, watch, reset: resetPass, formState: { errors: errorsPass } } = useForm();
     const newPassword = watch("newPassword");
@@ -129,6 +131,7 @@ const Profile = () => {
             const userRef = ref(db, `users/${user.uid}`);
             await update(userRef, data);
             toast.success("Profile updated successfully!");
+            setIsEditing(false);
         } catch (error) {
             console.error("Error updating profile:", error);
             toast.error("Failed to update profile.");
@@ -180,7 +183,17 @@ const Profile = () => {
             case 'info':
                 return (
                     <div className="space-y-6 animate-fadeIn">
-                        <h2 className="text-2xl font-bold text-[#2E2E2E] mb-6">Personal Information</h2>
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-2xl font-bold text-[#2E2E2E]">Personal Information</h2>
+                            {!isEditing && (
+                                <button
+                                    onClick={() => setIsEditing(true)}
+                                    className="flex items-center gap-2 px-4 py-2 bg-orange-100 text-[#F28C28] rounded-lg hover:bg-orange-200 transition-colors font-medium"
+                                >
+                                    <FaUser size={14} /> Edit Details
+                                </button>
+                            )}
+                        </div>
 
                         <div className="flex flex-col items-center mb-8">
                             <div className="relative">
@@ -195,49 +208,81 @@ const Profile = () => {
                             </div>
                         </div>
 
-                        <form onSubmit={handleSubmitInfo(onInfoSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-gray-600 font-medium">Full Name</label>
-                                <input
-                                    type="text"
-                                    {...registerInfo("name", { required: "Name is required" })}
-                                    className={`w-full p-3 rounded-lg border ${errorsInfo.name ? 'border-red-500' : 'border-gray-200'} focus:border-[#F28C28] focus:ring-1 focus:ring-[#F28C28] outline-none transition-all bg-white`}
-                                />
-                                {errorsInfo.name && <span className="text-xs text-red-500">{errorsInfo.name.message}</span>}
+                        {isEditing ? (
+                            <form onSubmit={handleSubmitInfo(onInfoSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-gray-600 font-medium">Full Name</label>
+                                    <input
+                                        type="text"
+                                        {...registerInfo("name", { required: "Name is required" })}
+                                        className={`w-full p-3 rounded-lg border ${errorsInfo.name ? 'border-red-500' : 'border-gray-200'} focus:border-[#F28C28] focus:ring-1 focus:ring-[#F28C28] outline-none transition-all bg-white`}
+                                    />
+                                    {errorsInfo.name && <span className="text-xs text-red-500">{errorsInfo.name.message}</span>}
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-gray-600 font-medium">Email Address</label>
+                                    <input
+                                        type="email"
+                                        disabled
+                                        {...registerInfo("email", { required: "Email is required" })}
+                                        className={`w-full p-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-500 cursor-not-allowed`}
+                                    />
+                                    <span className="text-xs text-gray-400">Email cannot be changed</span>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-gray-600 font-medium">Phone Number</label>
+                                    <input
+                                        type="tel"
+                                        {...registerInfo("phone", { required: "Phone is required" })}
+                                        className={`w-full p-3 rounded-lg border ${errorsInfo.phone ? 'border-red-500' : 'border-gray-200'} focus:border-[#F28C28] focus:ring-1 focus:ring-[#F28C28] outline-none transition-all bg-white`}
+                                    />
+                                    {errorsInfo.phone && <span className="text-xs text-red-500">{errorsInfo.phone.message}</span>}
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-gray-600 font-medium">Delivery Address</label>
+                                    <input
+                                        type="text"
+                                        {...registerInfo("address", { required: "Address is required" })}
+                                        className={`w-full p-3 rounded-lg border ${errorsInfo.address ? 'border-red-500' : 'border-gray-200'} focus:border-[#F28C28] focus:ring-1 focus:ring-[#F28C28] outline-none transition-all bg-white`}
+                                    />
+                                    {errorsInfo.address && <span className="text-xs text-red-500">{errorsInfo.address.message}</span>}
+                                </div>
+                                <div className="md:col-span-2 flex gap-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setIsEditing(false);
+                                            resetInfo(userdata);
+                                        }}
+                                        className="px-6 py-3 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button type="submit" className="bg-[#F28C28] text-white px-8 py-3 rounded-lg hover:bg-[#d6761f] transition-colors font-medium shadow-lg shadow-orange-500/30">
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-1 p-4 bg-gray-50 rounded-xl">
+                                    <p className="text-sm text-gray-500 font-medium uppercase tracking-wide">Full Name</p>
+                                    <p className="text-lg font-semibold text-gray-800">{userdata.name || 'Not set'}</p>
+                                </div>
+                                <div className="space-y-1 p-4 bg-gray-50 rounded-xl">
+                                    <p className="text-sm text-gray-500 font-medium uppercase tracking-wide">Email Address</p>
+                                    <p className="text-lg font-semibold text-gray-800">{userdata.email || 'Not set'}</p>
+                                </div>
+                                <div className="space-y-1 p-4 bg-gray-50 rounded-xl">
+                                    <p className="text-sm text-gray-500 font-medium uppercase tracking-wide">Phone Number</p>
+                                    <p className="text-lg font-semibold text-gray-800">{userdata.phone || userdata.phonenumber || 'Not set'}</p>
+                                </div>
+                                <div className="space-y-1 p-4 bg-gray-50 rounded-xl">
+                                    <p className="text-sm text-gray-500 font-medium uppercase tracking-wide">Delivery Address</p>
+                                    <p className="text-lg font-semibold text-gray-800">{userdata.address || 'Not set'}</p>
+                                </div>
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-gray-600 font-medium">Email Address</label>
-                                <input
-                                    type="email"
-                                    {...registerInfo("email", { required: "Email is required" })}
-                                    className={`w-full p-3 rounded-lg border ${errorsInfo.email ? 'border-red-500' : 'border-gray-200'} focus:border-[#F28C28] focus:ring-1 focus:ring-[#F28C28] outline-none transition-all bg-white`}
-                                />
-                                {errorsInfo.email && <span className="text-xs text-red-500">{errorsInfo.email.message}</span>}
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-gray-600 font-medium">Phone Number</label>
-                                <input
-                                    type="tel"
-                                    {...registerInfo("phone", { required: "Phone is required" })}
-                                    className={`w-full p-3 rounded-lg border ${errorsInfo.phone ? 'border-red-500' : 'border-gray-200'} focus:border-[#F28C28] focus:ring-1 focus:ring-[#F28C28] outline-none transition-all bg-white`}
-                                />
-                                {errorsInfo.phone && <span className="text-xs text-red-500">{errorsInfo.phone.message}</span>}
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-gray-600 font-medium">Delivery Address</label>
-                                <input
-                                    type="text"
-                                    {...registerInfo("address", { required: "Address is required" })}
-                                    className={`w-full p-3 rounded-lg border ${errorsInfo.address ? 'border-red-500' : 'border-gray-200'} focus:border-[#F28C28] focus:ring-1 focus:ring-[#F28C28] outline-none transition-all bg-white`}
-                                />
-                                {errorsInfo.address && <span className="text-xs text-red-500">{errorsInfo.address.message}</span>}
-                            </div>
-                            <div className="md:col-span-2">
-                                <button type="submit" className="bg-[#F28C28] text-white px-8 py-3 rounded-lg hover:bg-[#d6761f] transition-colors font-medium shadow-lg shadow-orange-500/30">
-                                    Save Changes
-                                </button>
-                            </div>
-                        </form>
+                        )}
                     </div>
                 );
 

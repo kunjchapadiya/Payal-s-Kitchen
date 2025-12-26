@@ -6,8 +6,9 @@ import 'react-toastify/dist/ReactToastify.css';
 //firebase
 import { testDatabaseConnection } from './utils/testFirebase';
 
-import Register from './pages/Register';
 import Login from './pages/Login';
+import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
 import Otp from './pages/Otp';
 
 // components
@@ -64,7 +65,7 @@ const App = () => {
   }, []);
 
   // Pages where Navbar + Footer should NOT show
-  const hideOnPages = ["/login", "/register", "/admin", "/chef", "/otp"];
+  const hideOnPages = ["/login", "/register", "/forgot-password", "/admin", "/chef", "/otp"];
 
   const shouldHide = hideOnPages.includes(location.pathname) || location.pathname.startsWith("/admin") || location.pathname.startsWith("/chef");
 
@@ -87,6 +88,7 @@ const App = () => {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/otp" element={<Otp />} />
 
         <Route path="/" element={<Home />} />
